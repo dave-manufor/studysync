@@ -1,0 +1,10 @@
+package com.example.studysyncapp.data.mapper
+
+import com.example.studysyncapp.domain.model.AppError
+
+fun Throwable.toAppError(): AppError{
+    val message = "Something went wrong"
+    return AppError(message, this)
+    TODO("Implement More specific messages using when block")
+
+}
