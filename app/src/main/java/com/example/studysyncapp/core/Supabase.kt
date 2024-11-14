@@ -1,6 +1,7 @@
 package com.example.studysyncapp.core
 
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 
@@ -17,6 +18,7 @@ class Supabase {
             return instance ?: synchronized(this){
                 instance ?: createSupabaseClient(SUPABASE_URL, SUPABASE_KEY){
                     install(Postgrest)
+                    install(Auth)
                 }.also { instance = it }
             }
         }

@@ -59,7 +59,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // ViewModel utilities for Compose
+
+//    Jetpack Compose Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.4")
+
+//    Splash Screen
+    implementation(libs.androidx.core.splashscreen)
+
+//     ViewModel utilities for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 //    Supabase
@@ -70,7 +77,6 @@ dependencies {
 
 //    KTOR
     implementation("io.ktor:ktor-client-android:3.0.1")
-
 
 
 // Arrow
