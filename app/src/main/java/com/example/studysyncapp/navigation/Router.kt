@@ -33,8 +33,7 @@ fun Router(){
         is AuthState.Unauthenticated -> Routes.SignIn
     }
 
-
-
+//    Navigation Host
     NavHost(navController = navController, startDestination = startScreen){
         composable<Routes.SignIn> { SignInScreen({},{},authViewModel) }
         composable<Routes.SignUp> { SignUpScreen({},{},authViewModel) }
