@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -89,6 +91,7 @@ import java.util.Date
 @Composable
 fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val state by agendaViewModel.state.collectAsState()
     var month by remember { mutableStateOf(Date()) }
     var selectedDate by remember { mutableStateOf(Date()) }
@@ -114,7 +117,7 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
     }
 
-    Column(modifier = Modifier.padding(top = 0.dp, start = UiVariables.ScreenPadding, end = UiVariables.ScreenPadding, bottom = UiVariables.ScreenPadding)) {
+    Column(modifier = Modifier.padding(horizontal = UiVariables.ScreenPadding, vertical = 0.dp).verticalScroll(scrollState)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -167,6 +170,8 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.fillMaxWidth().height(48.dp))
         }
     }
 

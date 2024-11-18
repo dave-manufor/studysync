@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
@@ -48,6 +49,7 @@ import com.example.studysyncapp.utils.toPrettyDateTimeFormat
 @Composable
 fun AssignmentsScreen(assignmentsViewModel: AssignmentsViewModel = viewModel()){
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val state by assignmentsViewModel.state.collectAsState()
     if(state.isLoading){
         Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
