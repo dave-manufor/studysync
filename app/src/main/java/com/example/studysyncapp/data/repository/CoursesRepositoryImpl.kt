@@ -8,7 +8,9 @@ import com.example.studysyncapp.domain.model.Course
 import com.example.studysyncapp.domain.repository.CoursesRepository
 
 
-class CoursesRepositoryImpl(private val coursesApi: CoursesApi) : CoursesRepository {
+class CoursesRepositoryImpl() : CoursesRepository {
+    private val coursesApi = CoursesApi()
+
     override suspend fun getCourses(): Either<AppError, List<Course>> {
         return Either.catch {
             coursesApi.getCourses()
@@ -27,9 +29,9 @@ class CoursesRepositoryImpl(private val coursesApi: CoursesApi) : CoursesReposit
         }.mapLeft { it.toAppError() }
     }
 
-    override suspend fun deleteCourse(course: Course): Either<AppError, Course> {
+    override suspend fun deleteCourse(id: String): Either<AppError, Course> {
         return Either.catch {
-            coursesApi.deleteCourse(course)
+            coursesApi.deleteCourse(id)
         }.mapLeft { it.toAppError() }
     }
 }

@@ -27,7 +27,9 @@ import com.example.studysyncapp.core.auth.AuthState
 import com.example.studysyncapp.core.auth.AuthViewModel
 import com.example.studysyncapp.presentation.BodyText
 import com.example.studysyncapp.presentation.DefaultButton
+import com.example.studysyncapp.presentation.FormColumn
 import com.example.studysyncapp.presentation.FormPasswordField
+import com.example.studysyncapp.presentation.FormRow
 import com.example.studysyncapp.presentation.FormTextField
 import com.example.studysyncapp.presentation.LinkText
 import com.example.studysyncapp.presentation.TitleDescriptionBar
@@ -51,7 +53,7 @@ fun SignUpScreen(onAuthenticated: () -> Unit, onNavigateToSignIn: () -> Unit, au
     Surface(modifier = Modifier.fillMaxSize(), color = OffWhite) {
         Column(
             modifier = Modifier
-                .fillMaxSize().padding(UiVariables.ScreenHorizontalPadding).safeContentPadding(),
+                .fillMaxSize().padding(UiVariables.ScreenPadding).safeContentPadding(),
             verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -59,12 +61,8 @@ fun SignUpScreen(onAuthenticated: () -> Unit, onNavigateToSignIn: () -> Unit, au
                 title = "Sign Up",
                 description = "Create an account to get started "
             )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(UiVariables.FormSpacing, Alignment.Top),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(UiVariables.FormSpacing, alignment = Alignment.Start)) {
+            FormColumn {
+                FormRow {
                     FormTextField(
                         value = firstName,
                         label = "First Name",

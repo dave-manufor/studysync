@@ -27,6 +27,7 @@ import com.example.studysyncapp.core.auth.AuthState
 import com.example.studysyncapp.core.auth.AuthViewModel
 import com.example.studysyncapp.presentation.BodyText
 import com.example.studysyncapp.presentation.DefaultButton
+import com.example.studysyncapp.presentation.FormColumn
 import com.example.studysyncapp.presentation.FormPasswordField
 import com.example.studysyncapp.presentation.FormTextField
 import com.example.studysyncapp.presentation.LinkText
@@ -48,7 +49,7 @@ fun SignInScreen(onAuthenticated: () -> Unit, onNavigateToSignUp: () -> Unit ,au
 
     Surface(modifier = Modifier.fillMaxSize(), color = OffWhite) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(UiVariables.ScreenHorizontalPadding).safeContentPadding(),
+            modifier = Modifier.fillMaxSize().padding(UiVariables.ScreenPadding).safeContentPadding(),
             verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -56,11 +57,7 @@ fun SignInScreen(onAuthenticated: () -> Unit, onNavigateToSignUp: () -> Unit ,au
                 title = "Sign In",
                 description = "Log in to get started "
             )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(UiVariables.FormSpacing, Alignment.Top),
-                horizontalAlignment = Alignment.Start
-            ) {
+            FormColumn {
 
                 FormTextField(
                     value = email,
