@@ -6,21 +6,22 @@ import io.github.jan.supabase.postgrest.from
 
 class CoursesApi {
     private val supabase = Supabase.getInstance()
+    private val coursesTable = supabase.from("courses")
 
     suspend fun getCourses(): List<Course>{
-        val course = supabase.from("courses").select().decodeList<Course>()
-        return course
+        val courses = coursesTable.select().decodeList<Course>()
+        return courses
     }
 
     suspend fun insertCourse(course: Course): Course{
-        val newCourse = supabase.from("courses").insert(course){
+        val newCourse = coursesTable.insert(course){
             select()
         }.decodeSingle<Course>()
         return newCourse
     }
 
     suspend fun updateCourse(course: Course): Course{
-        val updatedCourse = supabase.from("courses").update(course){
+        val updatedCourse = coursesTable.update(course){
             select()
             filter {
                 eq("id", course.id)
@@ -29,11 +30,11 @@ class CoursesApi {
         return updatedCourse
     }
 
-    suspend fun deleteCourse(course: Course): Course{
-        val deletedCourse = supabase.from("courses").delete{
+    suspend fun deleteCourse(id: String): Course{
+        val deletedCourse = coursesTable.delete{
             select()
             filter {
-                eq("id", course.id)
+                eq("id", id)
             }
         }.decodeSingle<Course>()
 

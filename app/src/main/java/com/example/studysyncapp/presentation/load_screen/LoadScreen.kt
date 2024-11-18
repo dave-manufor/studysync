@@ -19,7 +19,7 @@ import com.example.studysyncapp.ui.theme.UiVariables
 @Composable
 fun LoadScreen(){
     Surface(modifier = Modifier.fillMaxSize(), color = AccentBlue) {
-        Column(modifier = Modifier.fillMaxSize().padding(UiVariables.ScreenHorizontalPadding).safeContentPadding(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.fillMaxSize().padding(UiVariables.ScreenPadding).safeContentPadding(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_splash),
                 contentDescription = "Loader Icon"
