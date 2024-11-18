@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +44,9 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,7 +54,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.studysyncapp.R
+import com.example.studysyncapp.domain.model.Assignment
+import com.example.studysyncapp.domain.model.event.Event
+import com.example.studysyncapp.domain.model.event.EventType
 import com.example.studysyncapp.presentation.BodyText
+import com.example.studysyncapp.presentation.ElevatedCard
+import com.example.studysyncapp.presentation.ElevatedCardText
+import com.example.studysyncapp.presentation.ElevatedCardTitle
 import com.example.studysyncapp.presentation.Heading1
 import com.example.studysyncapp.presentation.Heading2
 import com.example.studysyncapp.presentation.Heading4
@@ -60,9 +70,12 @@ import com.example.studysyncapp.ui.theme.DarkBlue
 import com.example.studysyncapp.ui.theme.Neutral
 import com.example.studysyncapp.ui.theme.OffWhite
 import com.example.studysyncapp.ui.theme.UiVariables
+import com.example.studysyncapp.utils.capitalizeWords
 import com.example.studysyncapp.utils.formatToCalendarDay
 import com.example.studysyncapp.utils.formatToMonthString
+import com.example.studysyncapp.utils.formatToTimeString
 import com.example.studysyncapp.utils.formatToYearString
+import com.example.studysyncapp.utils.getDateFromUTCString
 import com.example.studysyncapp.utils.getDayOfWeek3Letters
 import com.example.studysyncapp.utils.getDayOfWeekInt
 import com.example.studysyncapp.utils.getDaysInMonth
@@ -70,6 +83,7 @@ import com.example.studysyncapp.utils.getFullWeeksForMonth
 import com.example.studysyncapp.utils.getNextMonth
 import com.example.studysyncapp.utils.getPrevMonth
 import com.example.studysyncapp.utils.isInSameMonth
+import com.example.studysyncapp.utils.isSameDay
 import java.util.Date
 
 @Composable
@@ -78,6 +92,11 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
     val state by agendaViewModel.state.collectAsState()
     var month by remember { mutableStateOf(Date()) }
     var selectedDate by remember { mutableStateOf(Date()) }
+    val agendaList by remember {
+        derivedStateOf {
+            (state.assignments.map { it.toAgendaItem() } + state.events.map { it.toAgendaItem() }).filter { it.sortDate.isSameDay(selectedDate) }.sortedBy { it.sortDate }
+        }
+    }
 
     fun resetCalendar(){
         month = Date()
@@ -119,6 +138,36 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         Spacer(modifier = Modifier.fillMaxWidth().height(24.dp))
         AgendaCalendar(month = month, selectedDate = selectedDate, onSelectDate = {date ->  selectedDate = date}, onNextMonth = {month = month.getNextMonth()}, onPrevMonth = {month = month.getPrevMonth()})
         Spacer(modifier = Modifier.fillMaxWidth().height(40.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+            horizontalAlignment = Alignment.Start,) {
+            agendaList.forEach {
+                ElevatedCard {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(painter = painterResource(when(it.type){
+                                AgendaType.EVENT -> R.drawable.ic_calendar
+                                AgendaType.TEST -> R.drawable.ic_exclaim_single
+                                AgendaType.EXAM -> R.drawable.ic_exclaim_double
+                                AgendaType.ASSIGNMENT -> R.drawable.ic_tasks
+                            }), contentDescription = "Agenda Item Icon", tint = it.tint, modifier = Modifier.size(24.dp))
+                            ElevatedCardText(text = it.type.toString().capitalizeWords())
+                        }
+                        ElevatedCardText(text = it.timeString)
+                    }
+                    ElevatedCardTitle(text = it.title)
+                    if(it.subText.isNotEmpty()){
+                        ElevatedCardText(text = it.subText)
+                    }
+                }
+            }
+        }
     }
 
 }
@@ -285,6 +334,34 @@ private fun CalendarCustomLayout(
             }
         }
     }
+}
+
+private fun Assignment.toAgendaItem(): AgendaItem {
+    val date = getDateFromUTCString(this.due_at)
+    return AgendaItem(
+        type = AgendaType.ASSIGNMENT,
+        sortDate = date,
+        timeString = date.formatToTimeString(),
+        title = this.name,
+        subText = this.description ?: "",
+        tint = DarkBlue
+    )
+}
+
+private fun Event.toAgendaItem(): AgendaItem{
+    val startDate = getDateFromUTCString(this.starts_at)
+    return AgendaItem(
+        type = when(this.type){
+            EventType.EVENT -> AgendaType.EVENT
+            EventType.TEST -> AgendaType.TEST
+            EventType.EXAM -> AgendaType.EXAM
+        },
+        sortDate = startDate,
+        timeString = startDate.formatToTimeString(),
+        title = this.name,
+        subText = this.description ?: "",
+        tint = Color.Red
+    )
 }
 
 @Preview(showBackground = true)
