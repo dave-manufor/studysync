@@ -49,6 +49,7 @@ import com.example.studysyncapp.utils.toPrettyDateTimeFormat
 @Composable
 fun AssignmentsScreen(assignmentsViewModel: AssignmentsViewModel = viewModel()){
     val context = LocalContext.current
+
     val scrollState = rememberScrollState()
     val state by assignmentsViewModel.state.collectAsState()
     if(state.isLoading){
