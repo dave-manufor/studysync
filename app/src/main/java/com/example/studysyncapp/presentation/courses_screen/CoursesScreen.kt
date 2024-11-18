@@ -41,6 +41,7 @@ import com.example.studysyncapp.utils.toColor
 @Composable
 fun CoursesScreen(coursesViewModel: CoursesViewModel = viewModel()) {
     val context = LocalContext.current
+
     val state by coursesViewModel.state.collectAsState()
     if(state.isLoading){
         Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
