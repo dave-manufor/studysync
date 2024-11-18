@@ -27,6 +27,7 @@ import com.example.studysyncapp.core.auth.AuthState
 import com.example.studysyncapp.core.auth.AuthViewModel
 import com.example.studysyncapp.presentation.BodyText
 import com.example.studysyncapp.presentation.DefaultButton
+import com.example.studysyncapp.presentation.ErrorText
 import com.example.studysyncapp.presentation.FormColumn
 import com.example.studysyncapp.presentation.FormPasswordField
 import com.example.studysyncapp.presentation.FormRow
@@ -93,12 +94,7 @@ fun SignUpScreen(onAuthenticated: () -> Unit, onNavigateToSignIn: () -> Unit, au
                 text = "Create Account",
                 onClick = { authViewModel.signUp(context, email, password, firstName, lastName) })
             if (errMsg.isNotEmpty()) {
-                Text(
-                    text = errMsg,
-                    color = Color.Red,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight(400)
-                )
+                ErrorText(text = errMsg)
             }
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp, alignment = Alignment.CenterHorizontally)) {
                 BodyText(text = "Already have an account?")

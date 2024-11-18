@@ -3,6 +3,7 @@ package com.example.studysyncapp.utils
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -149,5 +150,10 @@ fun Date.isInSameMonth(date: Date): Boolean {
     val localDate2 = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 
     return localDate1.year == localDate2.year && localDate1.month == localDate2.month
+}
+
+fun LocalDate.getFormat(format: String): String{
+    val formatter = DateTimeFormatter.ofPattern(format)
+    return formatter.format(this)
 }
 

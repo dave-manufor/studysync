@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,6 +74,8 @@ import com.example.studysyncapp.ui.theme.DarkBlue
 import com.example.studysyncapp.ui.theme.NeutralLight
 import com.example.studysyncapp.ui.theme.UiVariables
 import com.example.studysyncapp.utils.capitalizeWords
+import com.example.studysyncapp.utils.formatToMonthString
+import com.example.studysyncapp.utils.getFormat
 import com.example.studysyncapp.utils.toHexString
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
@@ -79,8 +83,10 @@ import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.TimePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Locale
 
 @Composable
 fun Heading1(text: String) {
@@ -132,6 +138,16 @@ fun BodyText(text: String){
         fontWeight = FontWeight(400),
         color = Color.Black,
         lineHeight = 16.sp
+    )
+}
+
+@Composable
+fun ErrorText(text: String){
+    Text(
+        text = text,
+        color = Color.Red,
+        fontSize = 12.sp,
+        fontWeight = FontWeight(400)
     )
 }
 
@@ -334,7 +350,7 @@ fun FormDatePicker(date: LocalDate,label: String, onValueChange: (LocalDate) -> 
     val interactionSource = remember { MutableInteractionSource() }
     OutlinedTextField(
         interactionSource = interactionSource,
-        value = "${date.dayOfWeek}, ${date.dayOfMonth} ${date.month}, ${date.year}".capitalizeWords(),
+        value = date.getFormat("EEE, d MMM, yyyy"),
         enabled = enabled,
         readOnly = true,
         onValueChange = {},
@@ -405,6 +421,25 @@ fun FormTimePicker(time: LocalTime, label: String, onValueChange: (LocalTime) ->
         ){onValueChange(it)}
     }
 }
+
+@Composable
+fun FormDateTimePicker(date: LocalDate, time: LocalTime, dateLabel: String, timeLabel: String, onValueChange: (LocalDate, LocalTime) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true){
+    Row(modifier = modifier.fillMaxWidth()) {
+        FormDatePicker(date = date, label = dateLabel, onValueChange = {date ->
+            onValueChange(date, time)
+        }, enabled = enabled, modifier = Modifier.weight(0.6f))
+        Spacer(modifier = Modifier.width(16.dp))
+        FormTimePicker(time = time, label = timeLabel, onValueChange = {time ->
+            onValueChange(date, time)
+        }, enabled = enabled, modifier = Modifier.weight(0.4f))
+    }
+}
+
+//@Preview(showBackground = true)
+//@Composable
+//fun FormDateTimePickerPreview(){
+//    FormDateTimePicker(date = LocalDate.now(), time = LocalTime.now(), dateLabel = "Date", timeLabel = "Time", onValueChange = {date, time -> {}})
+//}
 
 @Composable
 fun <T> FormDropdown(options: List<T>, getValueText: (T) -> String, value: T, label: String, onValueChange: (T) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true){
