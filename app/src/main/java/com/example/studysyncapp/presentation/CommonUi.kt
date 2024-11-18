@@ -350,7 +350,7 @@ fun FormDatePicker(date: LocalDate,label: String, onValueChange: (LocalDate) -> 
     val interactionSource = remember { MutableInteractionSource() }
     OutlinedTextField(
         interactionSource = interactionSource,
-        value = date.getFormat("EEE, d MMM, yyyy"),
+        value = date.getFormat("d MMM, yyyy"),
         enabled = enabled,
         readOnly = true,
         onValueChange = {},
@@ -358,9 +358,9 @@ fun FormDatePicker(date: LocalDate,label: String, onValueChange: (LocalDate) -> 
         shape = RoundedCornerShape(size = 12.dp),
         modifier = modifier
             .fillMaxWidth(),
-        trailingIcon = {
-            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Select Date", tint = NeutralLight)
-        }
+//        trailingIcon = {
+//            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Select Date", tint = NeutralLight)
+//        }
     )
 
     if(interactionSource.collectIsPressedAsState().value){
@@ -400,9 +400,9 @@ fun FormTimePicker(time: LocalTime, label: String, onValueChange: (LocalTime) ->
         shape = RoundedCornerShape(size = 12.dp),
         modifier = modifier
             .fillMaxWidth(),
-        trailingIcon = {
-            Icon(imageVector = Icons.Default.Create, contentDescription = "Select Date", tint = NeutralLight)
-        }
+//        trailingIcon = {
+//            Icon(imageVector = Icons.Default.Create, contentDescription = "Select Date", tint = NeutralLight)
+//        }
     )
 
     if(interactionSource.collectIsPressedAsState().value){
@@ -427,11 +427,11 @@ fun FormDateTimePicker(date: LocalDate, time: LocalTime, dateLabel: String, time
     Row(modifier = modifier.fillMaxWidth()) {
         FormDatePicker(date = date, label = dateLabel, onValueChange = {date ->
             onValueChange(date, time)
-        }, enabled = enabled, modifier = Modifier.weight(0.6f))
+        }, enabled = enabled, modifier = Modifier.weight(0.55f))
         Spacer(modifier = Modifier.width(16.dp))
         FormTimePicker(time = time, label = timeLabel, onValueChange = {time ->
             onValueChange(date, time)
-        }, enabled = enabled, modifier = Modifier.weight(0.4f))
+        }, enabled = enabled, modifier = Modifier.weight(0.45f))
     }
 }
 
@@ -453,6 +453,7 @@ fun <T> FormDropdown(options: List<T>, getValueText: (T) -> String, value: T, la
             enabled = enabled,
             readOnly = true,
             onValueChange = {},
+            shape = RoundedCornerShape(size = 12.dp),
             interactionSource = interactionSource,
             label = { Text(text = label, fontSize = 12.sp, fontWeight = FontWeight(700)) },
             modifier = modifier.fillMaxWidth(),

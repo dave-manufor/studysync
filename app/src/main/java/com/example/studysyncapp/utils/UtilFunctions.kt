@@ -51,6 +51,12 @@ fun String.toPrettyDateTimeFormat(): String{
     return date?.let { outputFormat.format(it) } ?: "Invalid date"
 }
 
+fun getDateFromUTCString(utcString: String): Date {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getTimeZone("UTC") // Set the timezone to UTC
+    return dateFormat.parse(utcString) ?: throw IllegalArgumentException("Invalid date string")
+}
+
 fun LocalDateTime.toUTC(): String{
 
     // Convert LocalDateTime to UTC ZonedDateTime
@@ -107,6 +113,8 @@ fun Date.getDaysInMonth(): List<Date>{
     return daysInMonth
 }
 
+fun Date.formatToTimeString(): String = SimpleDateFormat("h:mm a", Locale.getDefault()).format(this)
+
 fun Date.formatToMonthString(): String = SimpleDateFormat("MMMM", Locale.getDefault()).format(this)
 
 fun Date.formatToYearString(): String = SimpleDateFormat("yyyy", Locale.getDefault()).format(this)
@@ -150,6 +158,13 @@ fun Date.isInSameMonth(date: Date): Boolean {
     val localDate2 = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 
     return localDate1.year == localDate2.year && localDate1.month == localDate2.month
+}
+
+fun Date.isSameDay(date: Date): Boolean {
+    val localDate1 = this.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    val localDate2 = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+    return localDate1 == localDate2
 }
 
 fun LocalDate.getFormat(format: String): String{
