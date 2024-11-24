@@ -4,6 +4,7 @@ import arrow.core.Either
 import com.example.studysyncapp.data.mapper.toAppError
 import com.example.studysyncapp.data.remote.EventsApi
 import com.example.studysyncapp.domain.model.AppError
+import com.example.studysyncapp.domain.model.Schedule
 import com.example.studysyncapp.domain.model.event.Event
 import com.example.studysyncapp.domain.repository.EventsRepository
 
@@ -13,6 +14,14 @@ class EventsRepositoryImpl: EventsRepository {
     override suspend fun getEvents(): Either<AppError, List<Event>> {
         return Either.catch {
             eventsApi.getEvents()
+        }.mapLeft {
+            it.toAppError()
+        }
+    }
+
+    override suspend fun getEventsByClassroomId(id: String): Either<AppError, List<Event>> {
+        return Either.catch {
+            eventsApi.getEventsByClassroomId(id)
         }.mapLeft {
             it.toAppError()
         }

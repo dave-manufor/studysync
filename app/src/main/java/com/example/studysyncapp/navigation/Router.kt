@@ -1,46 +1,29 @@
 package com.example.studysyncapp.navigation
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.studysyncapp.core.auth.AuthState
 import com.example.studysyncapp.core.auth.AuthViewModel
-import com.example.studysyncapp.presentation.NavBar
-import com.example.studysyncapp.presentation.agenda_screen.AgendaScreen
-import com.example.studysyncapp.presentation.assignments_screen.AssignmentsScreen
-import com.example.studysyncapp.presentation.courses_screen.CoursesScreen
-import com.example.studysyncapp.presentation.courses_screen.CreateCourseDialog
-import com.example.studysyncapp.presentation.load_screen.LoadScreen
-import com.example.studysyncapp.presentation.signin_screen.SignInScreen
-import com.example.studysyncapp.presentation.signup_screen.SignUpScreen
-import com.example.studysyncapp.ui.theme.AccentBlue
-import com.example.studysyncapp.ui.theme.DarkBlue
-import com.example.studysyncapp.ui.theme.UiVariables
+import com.example.studysyncapp.presentation.utils.NavBar
+import com.example.studysyncapp.presentation.agenda.AgendaScreen
+import com.example.studysyncapp.presentation.assignments.AssignmentsScreen
+import com.example.studysyncapp.presentation.classroom.details.ClassroomDetailsScreen
+import com.example.studysyncapp.presentation.classroom.list.ClassroomsScreen
+import com.example.studysyncapp.presentation.courses.CoursesScreen
+import com.example.studysyncapp.presentation.load.LoadScreen
+import com.example.studysyncapp.presentation.signin.SignInScreen
+import com.example.studysyncapp.presentation.signup.SignUpScreen
 import io.ktor.util.reflect.instanceOf
 
 @Composable
@@ -64,13 +47,22 @@ fun Router(){
 
     if(authState.instanceOf(AuthState.Authenticated::class)){
         Scaffold(
-            bottomBar = {NavBar(navController)},
+            bottomBar = { NavBar(navController) },
         ){
             innerPadding ->
             NavHost(navController = navController, startDestination = startScreen, modifier = Modifier.padding(innerPadding)){
                 composable<Routes.Agenda> { AgendaScreen() }
                 composable<Routes.Courses> { CoursesScreen() }
                 composable<Routes.Assignments> { AssignmentsScreen() }
+                composable<Routes.Classrooms> { ClassroomsScreen(onNavigateToClassroom = {
+                    navController.navigate(route = Routes.ClassroomDetails(id = it))
+                }) }
+                composable<Routes.ClassroomDetails> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Routes.ClassroomDetails>()
+                    ClassroomDetailsScreen(id = args.id, onNavigateToClassroomsList = {
+                        navController.navigate(route = Routes.Classrooms)
+                    })
+                }
             }
         }
     }else{

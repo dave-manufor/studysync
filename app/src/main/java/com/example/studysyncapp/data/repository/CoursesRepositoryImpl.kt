@@ -5,6 +5,7 @@ import com.example.studysyncapp.data.mapper.toAppError
 import com.example.studysyncapp.data.remote.CoursesApi
 import com.example.studysyncapp.domain.model.AppError
 import com.example.studysyncapp.domain.model.Course
+import com.example.studysyncapp.domain.model.Schedule
 import com.example.studysyncapp.domain.repository.CoursesRepository
 
 
@@ -14,6 +15,12 @@ class CoursesRepositoryImpl() : CoursesRepository {
     override suspend fun getCourses(): Either<AppError, List<Course>> {
         return Either.catch {
             coursesApi.getCourses()
+        }.mapLeft { it.toAppError() }
+    }
+
+    override suspend fun getCoursesByClassroomId(id: String): Either<AppError, List<Course>> {
+        return Either.catch {
+            coursesApi.getCoursesByClassroomId(id)
         }.mapLeft { it.toAppError() }
     }
 

@@ -13,6 +13,15 @@ class CoursesApi {
         return courses
     }
 
+    suspend fun getCoursesByClassroomId(classroomId: String): List<Course>{
+        val courses = coursesTable.select{
+            filter {
+                eq("classroom_id", classroomId)
+            }
+        }.decodeList<Course>()
+        return courses
+    }
+
     suspend fun insertCourse(course: Course): Course{
         val newCourse = coursesTable.insert(course){
             select()

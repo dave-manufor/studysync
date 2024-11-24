@@ -22,6 +22,15 @@ class EventsApi {
         return events
     }
 
+    suspend fun getEventsByClassroomId(classroomId: String): List<Event>{
+        val events = eventsTable.select{
+            filter {
+                eq("classroom_id", classroomId)
+            }
+        }.decodeList<Event>()
+        return events
+    }
+
     suspend fun insertEvent(event: Event): Event{
         val newEvent = eventsTable.insert(event){
             select()

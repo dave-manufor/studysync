@@ -1,11 +1,25 @@
 package com.example.studysyncapp.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
+import android.net.Uri
+import android.os.Build
+import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.getSystemService
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -57,6 +71,19 @@ fun getDateFromUTCString(utcString: String): Date {
     return dateFormat.parse(utcString) ?: throw IllegalArgumentException("Invalid date string")
 }
 
+fun getTimeFromUTCString(utcString: String): LocalTime {
+    // Parse the input string as OffsetTime
+    val offsetTime = OffsetTime.parse("$utcString:00", DateTimeFormatter.ofPattern("HH:mm:ssXXX"))
+
+    // Convert OffsetTime to LocalTime in the system's default timezone
+    val systemZone = ZoneId.systemDefault()
+    val localTime = offsetTime.atDate(LocalDate.now())
+        .atZoneSameInstant(systemZone)
+        .toLocalTime()
+
+    return localTime
+}
+
 fun LocalDateTime.toUTC(): String{
 
     // Convert LocalDateTime to UTC ZonedDateTime
@@ -70,6 +97,27 @@ fun LocalDateTime.toUTC(): String{
     return formattedUTC
 }
 
+fun LocalTime.toUTC(): String{
+
+// Assume the local time is based on a specific time zone (e.g., system's default offset)
+    val localOffset = ZoneOffset.systemDefault().rules.getOffset(this.atDate(java.time.LocalDate.now()))
+
+    // Combine the LocalTime with the local offset to get an OffsetTime
+    val offsetTime = OffsetTime.of(this, localOffset)
+
+    // Convert the OffsetTime to UTC
+    val utcTime = offsetTime.withOffsetSameInstant(ZoneOffset.UTC)
+
+    // Format the UTC time to a string
+    val formatter = DateTimeFormatter.ofPattern("HH:mm:ss'Z'")
+    return utcTime.format(formatter)
+}
+
+fun LocalTime.formatToTimeString(): String {
+    val formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
+    return this.format(formatter)
+}
+
 fun String.capitalizeWords(): String =
     this.split(" ") // Split the string into words
         .joinToString(" ") { it.lowercase().replaceFirstChar { char -> char.uppercaseChar() } }
@@ -80,11 +128,7 @@ fun Int.getDayOfWeek3Letters(): String? = Calendar.getInstance().apply {
     set(Calendar.DAY_OF_WEEK, this@getDayOfWeek3Letters)
 }.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
 
-fun Date.getDayOfWeekInt(): Int {
-    val calendar = Calendar.getInstance()
-    calendar.time = this
-    return calendar.get(Calendar.DAY_OF_WEEK)
-}
+fun Date.getDayOfWeekString(): String = SimpleDateFormat("EEEE", Locale.getDefault()).format(this)
 
 fun Date.getNextMonth(): Date{
     val localDate = this.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
@@ -170,5 +214,35 @@ fun Date.isSameDay(date: Date): Boolean {
 fun LocalDate.getFormat(format: String): String{
     val formatter = DateTimeFormatter.ofPattern(format)
     return formatter.format(this)
+}
+
+fun copyTextThenToast(context: Context, text:String) {
+    val clipboardManager =
+        context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("Classroom Code", text)
+    clipboardManager.setPrimaryClip(clip)
+    // Only show a toast for Android 12 and lower.
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2)
+        Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
+}
+
+fun Uri.toByteArray(context: Context): ByteArray? {
+    return try {
+        val contentResolver = context.contentResolver
+        val inputStream: InputStream? = contentResolver.openInputStream(this)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
+
+        while (inputStream?.read(buffer).also { bytesRead = it ?: -1 } != -1) {
+            byteArrayOutputStream.write(buffer, 0, bytesRead)
+        }
+
+        inputStream?.close()
+        byteArrayOutputStream.toByteArray()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }
 
