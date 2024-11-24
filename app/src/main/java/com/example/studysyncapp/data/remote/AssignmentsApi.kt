@@ -15,9 +15,18 @@ class AssignmentsApi {
         return assignments
     }
 
+    suspend fun getAssignmentsByClassroomId(classroomId: String): List<Assignment>{
+        val assignments = assignmentsTable.select(Columns.raw("*, course:courses(*)")){
+            filter {
+                eq("classroom_id", classroomId)
+            }
+        }.decodeList<Assignment>()
+        return assignments
+    }
+
     suspend fun insertAssignment(assignment: Assignment): Assignment{
         val newAssignment = assignmentsTable.insert(assignment){
-            select()
+            select(Columns.raw("*, course:courses(*)"))
         }.decodeSingle<Assignment>()
         return newAssignment
 
@@ -25,7 +34,7 @@ class AssignmentsApi {
 
     suspend fun updateAssignment(assignment: Assignment): Assignment{
         val updatedAssignment = assignmentsTable.update(assignment) {
-            select()
+            select(Columns.raw("*, course:courses(*)"))
             filter {
                 eq("id", assignment.id)
             }
@@ -36,7 +45,7 @@ class AssignmentsApi {
 
     suspend fun deleteAssignment(id: String): Assignment{
         val deletedAssignment = assignmentsTable.delete {
-            select()
+            select(Columns.raw("*, course:courses(*)"))
             filter {
                 eq("id", id)
             }

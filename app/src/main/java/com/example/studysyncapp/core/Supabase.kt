@@ -4,6 +4,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 
 class Supabase {
 
@@ -19,6 +20,7 @@ class Supabase {
                 instance ?: createSupabaseClient(SUPABASE_URL, SUPABASE_KEY){
                     install(Postgrest)
                     install(Auth)
+                    install(Storage)
                 }.also { instance = it }
             }
         }
