@@ -9,3 +9,18 @@ StudySync App
 - Difficulty in navigating class links
 - Communication between teachers and students
 
+Features
+ Must-haves
+- **Personal Schedules**
+- **Reading Timetable**
+- **Notifications and reminders for Schedules and assignments**
+- Organizing class links
+- Classrooms (Shared class updates)
+- Notes Uploads
+Should-haves
+- Pomodoro Study Timer
+- Public Chat for Classrooms
+Nice-to-haves
+- AI Summarization
+- Google Classroom Tasks Integration
+
