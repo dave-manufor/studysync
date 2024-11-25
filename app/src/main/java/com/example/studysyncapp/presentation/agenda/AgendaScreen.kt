@@ -347,7 +347,7 @@ private fun CalendarCustomLayout(
     }
 }
 
-private fun Assignment.toAgendaItem(): AgendaItem {
+fun Assignment.toAgendaItem(): AgendaItem {
     val date = getDateFromUTCString(this.due_at)
     return AgendaItem(
         type = AgendaType.ASSIGNMENT,
@@ -359,7 +359,7 @@ private fun Assignment.toAgendaItem(): AgendaItem {
     )
 }
 
-private fun Event.toAgendaItem(): AgendaItem{
+fun Event.toAgendaItem(): AgendaItem{
     val startDate = getDateFromUTCString(this.starts_at)
     return AgendaItem(
         type = when(this.type){
@@ -375,7 +375,7 @@ private fun Event.toAgendaItem(): AgendaItem{
     )
 }
 
-private fun Schedule.toAgendaItem(): AgendaItem{
+fun Schedule.toAgendaItem(): AgendaItem{
     return AgendaItem(
         type = AgendaType.SCHEDULE,
         day = DaysOfTheWeek.fromInt(this.day_of_the_week),

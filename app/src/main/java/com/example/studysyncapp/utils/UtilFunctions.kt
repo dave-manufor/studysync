@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.net.Uri
 import android.os.Build
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -244,5 +245,29 @@ fun Uri.toByteArray(context: Context): ByteArray? {
         e.printStackTrace()
         null
     }
+}
+
+fun Uri.getFileNameFromUri(context: Context): String? {
+    var fileName: String? = null
+
+    // If the URI scheme is "content"
+    if (this.scheme == "content") {
+        context.contentResolver.query(this, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && cursor.moveToFirst()) {
+                fileName = cursor.getString(nameIndex)
+            }
+        }
+    }
+
+    // If the URI scheme is "file"
+    if (fileName == null) {
+        fileName = this.path?.let { path ->
+            val lastSlashIndex = path.lastIndexOf("/")
+            if (lastSlashIndex != -1) path.substring(lastSlashIndex + 1) else path
+        }
+    }
+
+    return fileName
 }
 

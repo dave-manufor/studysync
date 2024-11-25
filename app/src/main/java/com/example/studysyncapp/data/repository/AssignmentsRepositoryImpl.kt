@@ -5,7 +5,9 @@ import com.example.studysyncapp.data.mapper.toAppError
 import com.example.studysyncapp.data.remote.AssignmentsApi
 import com.example.studysyncapp.domain.model.AppError
 import com.example.studysyncapp.domain.model.Assignment
+import com.example.studysyncapp.domain.model.AssignmentFile
 import com.example.studysyncapp.domain.model.Schedule
+import com.example.studysyncapp.domain.model.file.File
 import com.example.studysyncapp.domain.repository.AssignmentsRepository
 
 class AssignmentsRepositoryImpl: AssignmentsRepository {
@@ -20,6 +22,15 @@ class AssignmentsRepositoryImpl: AssignmentsRepository {
     override suspend fun getAssignmentsByClassroomId(id: String): Either<AppError, List<Assignment>> {
         return Either.catch {
             assignmentsApi.getAssignmentsByClassroomId(id)
+        }.mapLeft { it.toAppError() }
+    }
+
+    override suspend fun attatchFileToAssignment(
+        assignment: Assignment,
+        file: File
+    ): Either<AppError, AssignmentFile> {
+        return Either.catch {
+            assignmentsApi.attatchFileToAssignment(assignment.id, file.id!!)
         }.mapLeft { it.toAppError() }
     }
 

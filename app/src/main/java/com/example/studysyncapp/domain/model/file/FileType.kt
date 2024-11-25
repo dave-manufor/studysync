@@ -1,4 +1,4 @@
-package com.example.studysyncapp.core
+package com.example.studysyncapp.domain.model.file
 
 enum class FileType(val value: String){
     ASSIGNMENT("assignment"),

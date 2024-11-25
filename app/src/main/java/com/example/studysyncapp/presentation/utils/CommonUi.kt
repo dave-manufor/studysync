@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -84,6 +85,7 @@ import com.example.studysyncapp.ui.theme.AccentBlue
 import com.example.studysyncapp.ui.theme.DarkBlue
 import com.example.studysyncapp.ui.theme.NeutralLight
 import com.example.studysyncapp.ui.theme.UiVariables
+import com.example.studysyncapp.utils.getFileNameFromUri
 import com.example.studysyncapp.utils.getFormat
 import com.example.studysyncapp.utils.toHexString
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -505,6 +507,7 @@ fun <T> FormDropdown(options: List<T>, getValueText: (T) -> String, value: T, la
 
 @Composable
 fun FormFilePicker(value: Uri? = null, label: String, onValueChange: (Uri?) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true){
+    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument(), onResult = {
         result -> onValueChange(result)
     })
@@ -514,12 +517,13 @@ fun FormFilePicker(value: Uri? = null, label: String, onValueChange: (Uri?) -> U
         verticalAlignment = Alignment.Bottom
     ) {
         OutlinedTextField(
-            value = value?.path ?: "",
+            value = value?.getFileNameFromUri(context) ?: "",
             enabled = enabled,
             readOnly = true,
             onValueChange = {},
             label = { Text(text = label, fontSize = 12.sp, fontWeight = FontWeight(700)) },
             shape = RoundedCornerShape(size = 12.dp),
+            maxLines = 1,
             modifier = modifier
                 .fillMaxWidth().weight(0.7f),
         )

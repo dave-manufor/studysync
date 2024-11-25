@@ -10,17 +10,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,13 +37,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.studysyncapp.R
-import com.example.studysyncapp.core.FileType
+import com.example.studysyncapp.domain.model.file.FileType
 import com.example.studysyncapp.data.remote.FilesApi
+import com.example.studysyncapp.domain.model.Assignment
+import com.example.studysyncapp.domain.model.Course
+import com.example.studysyncapp.domain.model.file.File
+import com.example.studysyncapp.presentation.agenda.CreateEventDialog
+import com.example.studysyncapp.presentation.assignments.CreateAssignmentDialog
+import com.example.studysyncapp.presentation.classroom.details.views.ClassroomAgendaView
+import com.example.studysyncapp.presentation.classroom.details.views.ClassroomAssignmentsView
+import com.example.studysyncapp.presentation.classroom.details.views.ClassroomCoursesView
+import com.example.studysyncapp.presentation.classroom.details.views.ClassroomFilesView
+import com.example.studysyncapp.presentation.courses.CreateCourseDialog
+import com.example.studysyncapp.presentation.courses.CreateScheduleDialog
 import com.example.studysyncapp.presentation.utils.DefaultButton
 import com.example.studysyncapp.presentation.utils.FormFilePicker
 import com.example.studysyncapp.presentation.utils.Heading4
@@ -51,13 +67,12 @@ import com.example.studysyncapp.utils.toByteArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun ClassroomDetailsScreen(id: String, onNavigateToClassroomsList: () -> Unit){
     val classroomDetailsViewModel: ClassroomDetailsViewModel = viewModel(factory = ClassroomDetailsViewModelFactory(id))
+    val uriHandler = LocalUriHandler.current
     val state by classroomDetailsViewModel.state.collectAsState()
-    Log.d("MYTAG", state.toString())
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState {
         TabNavList.size
@@ -69,22 +84,87 @@ fun ClassroomDetailsScreen(id: String, onNavigateToClassroomsList: () -> Unit){
         selectedTabIndex = pagerState.currentPage
     }
     Column(modifier = Modifier.fillMaxSize().padding(UiVariables.ScreenPadding)) {
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Box(modifier = Modifier.clickable(indication = null, interactionSource = null) { onNavigateToClassroomsList() }){
-                    Icon(painter = painterResource(R.drawable.ic_left_arrow), contentDescription = "Go Back", tint = AccentBlue, modifier = Modifier.size(24.dp))
-                }
-                Spacer(modifier = Modifier.size(24.dp))
-                Heading4(state.classroom?.name ?: "")
-                Spacer(modifier = Modifier.size(24.dp))
-                if(state.isEditable){
-                    Box(modifier = Modifier.size(24.dp).clickable(indication = null, interactionSource = null) { onNavigateToClassroomsList() }){
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add Item", tint = AccentBlue, modifier = Modifier.size(24.dp))
-                    }
-                }else{
-                    Spacer(modifier = Modifier.size(24.dp))
-                }
-            }
-//        Spacer
+        ClassroomDetailsHeader(
+            classroomName = state.classroom?.name ?: "",
+            isEditable = state.isEditable,
+            onNavigateToClassroomsList = onNavigateToClassroomsList,
+            onNavigateToUploadFile = { classroomDetailsViewModel.onOpenUploadFile() },
+            isAssignmentEnabled = state.courses.isNotEmpty(),
+            isScheduleEnabled = state.courses.isNotEmpty(),
+            isFilesEnabled = state.courses.isNotEmpty() or state.assignments.isNotEmpty(),
+            onNavigateToCreateAssignment = { classroomDetailsViewModel.onOpenCreateAssignment() },
+            onNavigateToCreateCourse = { classroomDetailsViewModel.onOpenCreateCourse() },
+            onNavigateToCreateSchedule = { classroomDetailsViewModel.onOpenCreateSchedule() },
+            onNavigateToCreateEvent = { classroomDetailsViewModel.onOpenCreateEvent() }
+        )
+//        Dialogs ///////////////////////////////////////////////////////////////////////////////
+        Log.d("MYTAG", "ClassroomDetailsScreen: $state")
+        if(state.showUploadFileDialog){
+            UploadFileDialog(
+                onDismiss = { classroomDetailsViewModel.onDismissUploadFile() },
+                onConfirm = { isAssignment: Boolean, course: Course?, assignment: Assignment?, file: File ->
+                    classroomDetailsViewModel.onConfirmUploadFile(
+                        isAssignment,
+                        course,
+                        assignment,
+                        file
+                    )
+                },
+                classroomId = id,
+                courses = state.courses,
+                assignments = state.assignments
+            )
+        }
+        if(state.showCreateAssignmentDialog){
+            CreateAssignmentDialog(
+                onDismiss = { classroomDetailsViewModel.onDismissCreateAssignment() },
+                onConfirm = { assignmentName: String, courseId: String, assignmentDescription: String, dueAt: String ->
+                    classroomDetailsViewModel.onConfirmCreateAssignment(
+                        assignmentName = assignmentName,
+                        assignmentDescription = assignmentDescription,
+                        courseId = courseId,
+                        dueAt = dueAt,
+                        classroomId = id
+                    )
+                },
+                courses = state.courses
+            )
+        }
+        if(state.showCreateCourseDialog){
+            CreateCourseDialog(
+                onDismiss = { classroomDetailsViewModel.onDismissCreateCourse() },
+                onConfirm = { courseName: String, color: String, description -> classroomDetailsViewModel.onConfirmCreateCourse(courseName, color, description, id)}
+            )
+        }
+        if(state.showCreateScheduleDialog){
+            CreateScheduleDialog(
+                courses = state.courses,
+                onDismiss = { classroomDetailsViewModel.onDismissCreateSchedule() },
+                onConfirm = { course, dayOfTheWeek, startTime, endTime, online, location ->  classroomDetailsViewModel.onConfirmCreateSchedule(
+                    course = course,
+                    day = dayOfTheWeek,
+                    startTime = startTime,
+                    endTime = endTime,
+                    online = online,
+                    location = location,
+                    classroomId = id
+                )}
+            )
+        }
+        if(state.showCreateEventDialog){
+            CreateEventDialog(
+                onDismiss = { classroomDetailsViewModel.onDismissCreateEvent() },
+                onConfirm = {name, type, description, startsAt, endsAt ->  classroomDetailsViewModel.onConfirmCreateEvent(
+                    eventName = name,
+                    eventType = type,
+                    eventDescription = description,
+                    eventStartDate = startsAt,
+                    eventEndDate = endsAt,
+                    classroomId = id
+                )}
+            )
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////
 //        Tab Navigation
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally){
             ScrollableTabRow(
@@ -118,46 +198,73 @@ fun ClassroomDetailsScreen(id: String, onNavigateToClassroomsList: () -> Unit){
                 }
             }
         }
-//        Divider
-//        HorizontalDivider(thickness = 1.dp, color = NeutralLight, modifier = Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.fillMaxWidth().height(24.dp))
 //        Active Component
-        var fileUri by remember { mutableStateOf<Uri?>(null) }
-        val context = LocalContext.current
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize().weight(1f)){
+        HorizontalPager(state = pagerState, pageSpacing = UiVariables.ScreenPadding, modifier = Modifier.fillMaxSize().weight(1f)){
             index ->
            when(index){
-               0 -> {
-                   Column {
-                       FormFilePicker(
-                           value = fileUri,
-                           label = "Select File",
-                           onValueChange = {it -> fileUri = it},
-                       )
-                       DefaultButton(text = "Upload", onClick = {
-                           if(fileUri != null){
-                               val byteArray = fileUri?.toByteArray(context)
-                               byteArray?.let {
-                                   CoroutineScope(Dispatchers.IO).launch {
-                                       val fileApi = FilesApi()
-                                       fileApi.uploadFile(
-                                           fileName = "Test File - 1",
-                                           byteArray = byteArray,
-                                           type = FileType.ASSIGNMENT,
-                                           onProgressChange = {it -> Log.d("MYTAG", "Progress: $it%")},
-                                           onSuccess = {Log.d("MYTAG", "Upload Complete")},
-                                           onError = {Log.e("MYTAG", "Error: $it")},
-                                           classroomId = id
-                                       )
-                                   }
-                               }
-                           }
-                       })
-                   }
-               }
-               1 -> {}
-               2 -> {}
-               3 -> {}
+               0 -> ClassroomAgendaView(schedules = state.schedules, events = state.events)
+               1 -> ClassroomCoursesView(courses = state.courses)
+               2 -> ClassroomAssignmentsView(assignments = state.assignments)
+               3 -> ClassroomFilesView(files = state.files, onFileClick = {file -> classroomDetailsViewModel.onFileClick(file, uriHandler)})
            }
+        }
+    }
+}
+
+@Composable
+fun ClassroomDetailsHeader(
+    classroomName: String,
+    isEditable: Boolean,
+    isAssignmentEnabled: Boolean = false,
+    isScheduleEnabled: Boolean = false,
+    isFilesEnabled: Boolean = false,
+    onNavigateToClassroomsList: () -> Unit,
+    onNavigateToUploadFile: () -> Unit,
+    onNavigateToCreateAssignment: () -> Unit,
+    onNavigateToCreateCourse: () -> Unit,
+    onNavigateToCreateSchedule: () -> Unit,
+    onNavigateToCreateEvent: () -> Unit
+    ){
+    var openMenu by remember { mutableStateOf(false) }
+    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Box(modifier = Modifier.clickable(indication = null, interactionSource = null) { onNavigateToClassroomsList() }){
+            Icon(painter = painterResource(R.drawable.ic_left_arrow), contentDescription = "Go Back", tint = AccentBlue, modifier = Modifier.size(24.dp))
+        }
+        Spacer(modifier = Modifier.size(24.dp))
+        Heading4(classroomName)
+        Spacer(modifier = Modifier.size(24.dp))
+        if(isEditable){
+            Box(modifier = Modifier.size(24.dp).clickable(indication = null, interactionSource = null) { openMenu = true }){
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Open Menu", tint = AccentBlue, modifier = Modifier.size(24.dp))
+                if(openMenu){
+                    DropdownMenu(expanded = openMenu, onDismissRequest = {openMenu = false}) {
+                        DropdownMenuItem(text = { Text(text = "Create Course") }, onClick = {
+                            openMenu = false
+                            onNavigateToCreateCourse()
+
+                        })
+                        DropdownMenuItem(text = { Text(text = "Create Event") }, onClick = {
+                            openMenu = false
+                            onNavigateToCreateEvent()
+                        })
+                        DropdownMenuItem(text = { Text(text = "Create Schedule") }, enabled = isScheduleEnabled, onClick = {
+                            openMenu = false
+                            onNavigateToCreateSchedule()
+                        })
+                        DropdownMenuItem(text = { Text(text = "Create Assignment") }, enabled = isAssignmentEnabled, onClick = {
+                            openMenu = false
+                            onNavigateToCreateAssignment()
+                        })
+                        DropdownMenuItem(text = { Text(text = "Upload File") }, enabled = isFilesEnabled, onClick = {
+                            openMenu = false
+                            onNavigateToUploadFile()
+                        })
+                    }
+                }
+            }
+        }else{
+            Spacer(modifier = Modifier.size(24.dp))
         }
     }
 }
