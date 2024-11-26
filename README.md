@@ -84,7 +84,7 @@ ClickUp for Students
 - Classroom
 - Semester
 - Subjects
-- Lecturer ??
+- Lecturer
 - Class (Session)
 - Holiday
 - Assignment
@@ -106,7 +106,6 @@ ClickUp for Students
 - [ ] Agenda
 - [ ] Subjects
 - [ ] Tasks
-- [ ] 
 
 
 ## Design Inspiration
