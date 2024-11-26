@@ -183,7 +183,7 @@ build.gradle.kts
 
 ### Known Challenges and Resolutions
 
-1. **Challenge:** Handling File Upload Progress
+1. **Challenge:** Handling File Upload Progress.
    - **Issue:** Providing real-time progress updates during file uploads.
    - **Resolution:** Implemented the `uploadAsFlow` method in the `FilesApi` class to collect upload progress and update the UI accordingly.
 
