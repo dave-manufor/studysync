@@ -108,7 +108,6 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         month = Date()
         selectedDate = Date()
     }
-
     if(state.isLoading){
         Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
     }
