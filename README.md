@@ -102,7 +102,6 @@ ClickUp for Students
 - [ ] Create Teacher
 - [ ] Add Task
 - [ ] Edit Task
-- [ ] ////
 - [ ] Agenda
 - [ ] Subjects
 - [ ] Tasks
