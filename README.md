@@ -222,7 +222,7 @@ build.gradle.kts
    - Android Studio will automatically sync the Gradle files. If not, click on "Sync Project with Gradle Files" in the toolbar.
 
 4. **Build the Project:**
-   - Click on "Build" in the toolbar and select "Make Project".
+   - Click on "Build" in the toolbar and select "Make Project"
 
 5. **Run the Project:**
    - Connect an Android device or start an emulator.
