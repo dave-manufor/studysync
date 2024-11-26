@@ -125,6 +125,7 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
+
             TextButton(onClick = {resetCalendar()}) {
                 Heading4(text = "Today")
             }
