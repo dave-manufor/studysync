@@ -226,7 +226,7 @@ build.gradle.kts
    - Connect an Android device or start an emulator.
    - Click on "Run" in the toolbar and select "Run 'app'".
 
-## References
+## References          
 
 - [Supabase Documentation](https://supabase.io/docs)
 - [Hilt Documentation](https://dagger.dev/hilt/)
