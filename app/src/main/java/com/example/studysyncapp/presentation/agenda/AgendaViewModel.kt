@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class AgendaViewModel(): ViewModel() {
+class AgendaViewModel(): ViewModel(), CreateEventDialogController {
     private val assignmentsRepository: AssignmentsRepository = AssignmentsRepositoryImpl()
     private val eventsRepository: EventsRepository = EventsRepositoryImpl()
     private val schedulesRepository: SchedulesRepository = SchedulesRepositoryImpl()
@@ -114,7 +114,7 @@ class AgendaViewModel(): ViewModel() {
         }
     }
 
-    fun onConfirmCreateEvent(eventName: String, eventType: EventType, eventDescription: String, eventStartDate: String, eventEndDate: String, classroomId: String? = null) {
+    override fun onConfirmCreateEvent(eventName: String, eventType: EventType, eventDescription: String, eventStartDate: String, eventEndDate: String, classroomId: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             createEvent(
                 Event(
@@ -134,11 +134,11 @@ class AgendaViewModel(): ViewModel() {
         }
     }
 
-    fun onOpenCreateEvent(){
+    override fun onOpenCreateEvent(){
         _state.update { it.copy(showCreateEventDialog = true) }
     }
 
-    fun onDismissCreateEvent(){
+    override fun onDismissCreateEvent(){
         _state.update { it.copy(showCreateEventDialog = false) }
     }
 }

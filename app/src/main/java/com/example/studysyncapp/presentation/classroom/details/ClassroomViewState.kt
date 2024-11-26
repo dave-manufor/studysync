@@ -5,6 +5,7 @@ import com.example.studysyncapp.domain.model.Classroom
 import com.example.studysyncapp.domain.model.Course
 import com.example.studysyncapp.domain.model.Schedule
 import com.example.studysyncapp.domain.model.event.Event
+import com.example.studysyncapp.domain.model.file.File
 
 data class ClassroomViewState(
     val isEditable: Boolean = false,
@@ -15,5 +16,11 @@ data class ClassroomViewState(
     val courses: List<Course> = emptyList(),
     val assignments: List<Assignment> = emptyList(),
     val schedules: List<Schedule> = emptyList(),
-    val events: List<Event> = emptyList()
+    val events: List<Event> = emptyList(),
+    val files: List<File> = emptyList(),
+    val showUploadFileDialog: Boolean = false,
+    val showCreateScheduleDialog: Boolean = false,
+    val showCreateEventDialog: Boolean = false,
+    val showCreateAssignmentDialog: Boolean = false,
+    val showCreateCourseDialog: Boolean = false,
 )

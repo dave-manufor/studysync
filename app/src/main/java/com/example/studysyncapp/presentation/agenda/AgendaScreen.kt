@@ -109,9 +109,6 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         selectedDate = Date()
     }
 
-    Log.d("MYTAG", "AgendaScreen Month: $month")
-    Log.d("MYTAG", "AgendaScreen Selected Date: $selectedDate")
-
     if(state.isLoading){
         Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
     }
@@ -119,12 +116,13 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         Log.e("MYTAG", "Assignments Screen: ${state.error}")
         Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
     }
-    Column(modifier = Modifier.padding(horizontal = UiVariables.ScreenPadding, vertical = 0.dp).verticalScroll(scrollState)) {
+    Column(modifier = Modifier.padding(UiVariables.ScreenPadding).verticalScroll(scrollState)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
+
             TextButton(onClick = {resetCalendar()}) {
                 Heading4(text = "Today")
             }
@@ -347,7 +345,7 @@ private fun CalendarCustomLayout(
     }
 }
 
-private fun Assignment.toAgendaItem(): AgendaItem {
+fun Assignment.toAgendaItem(): AgendaItem {
     val date = getDateFromUTCString(this.due_at)
     return AgendaItem(
         type = AgendaType.ASSIGNMENT,
@@ -359,7 +357,7 @@ private fun Assignment.toAgendaItem(): AgendaItem {
     )
 }
 
-private fun Event.toAgendaItem(): AgendaItem{
+fun Event.toAgendaItem(): AgendaItem{
     val startDate = getDateFromUTCString(this.starts_at)
     return AgendaItem(
         type = when(this.type){
@@ -375,7 +373,7 @@ private fun Event.toAgendaItem(): AgendaItem{
     )
 }
 
-private fun Schedule.toAgendaItem(): AgendaItem{
+fun Schedule.toAgendaItem(): AgendaItem{
     return AgendaItem(
         type = AgendaType.SCHEDULE,
         day = DaysOfTheWeek.fromInt(this.day_of_the_week),

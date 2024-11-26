@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             StudySyncAppTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = OffWhite) {
+                Surface(modifier = Modifier.fillMaxSize().padding(top = UiVariables.ScreenPadding), color = OffWhite) {
                     Router()
                 }
             }
