@@ -109,8 +109,6 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         selectedDate = Date()
     }
 
-    Log.d("MYTAG", "AgendaScreen Month: $month")
-    Log.d("MYTAG", "AgendaScreen Selected Date: $selectedDate")
 
     if(state.isLoading){
         Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
