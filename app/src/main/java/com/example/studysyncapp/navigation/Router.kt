@@ -22,6 +22,7 @@ import com.example.studysyncapp.presentation.classroom.details.ClassroomDetailsS
 import com.example.studysyncapp.presentation.classroom.list.ClassroomsScreen
 import com.example.studysyncapp.presentation.courses.CoursesScreen
 import com.example.studysyncapp.presentation.load.LoadScreen
+import com.example.studysyncapp.presentation.more.MoreScreen
 import com.example.studysyncapp.presentation.signin.SignInScreen
 import com.example.studysyncapp.presentation.signup.SignUpScreen
 import io.ktor.util.reflect.instanceOf
@@ -63,6 +64,7 @@ fun Router(){
                         navController.navigate(route = Routes.Classrooms)
                     })
                 }
+                composable<Routes.More> { MoreScreen(authViewModel) }
             }
         }
     }else{

@@ -119,7 +119,7 @@ fun AgendaScreen(agendaViewModel: AgendaViewModel = viewModel()){
         Log.e("MYTAG", "Assignments Screen: ${state.error}")
         Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
     }
-    Column(modifier = Modifier.padding(horizontal = UiVariables.ScreenPadding, vertical = 0.dp).verticalScroll(scrollState)) {
+    Column(modifier = Modifier.padding(UiVariables.ScreenPadding).verticalScroll(scrollState)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
