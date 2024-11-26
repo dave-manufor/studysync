@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Study Sync App is an Android application designed to facilitate collaboration and resource sharing among students and educators. The primary goal of the project is to provide a seamless and efficient platform for uploading, storing, and sharing educational resources within a classroom or study group.
+The Study Sync App is an Android application designed to facilitate collaboration and resource sharing among students and educators. The primary goal of the project is to provide a seamless and efficient platform for uploading, storing, and sharing educational resources within a classroom or study group
 
 ### Goals
 - Streamline the process of sharing educational materials.
