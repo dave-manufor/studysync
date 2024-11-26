@@ -193,9 +193,7 @@ build.gradle.kts
 
 4. **Challenge:** Ensuring Compatibility with Different Android Versions
    - **Issue:** Supporting a wide range of Android versions while using modern libraries and features.
-   - **Resolution:** Enabled core library desugaring in the 
-
-build.gradle.kts
+   - **Resolution:** Enabled core library desugaring in the build.gradle.kts
 
  file to use Java 8+ APIs on older Android versions, ensuring compatibility across devices.
 
@@ -222,7 +220,7 @@ build.gradle.kts
    - Android Studio will automatically sync the Gradle files. If not, click on "Sync Project with Gradle Files" in the toolbar.
 
 4. **Build the Project:**
-   - Click on "Build" in the toolbar and select "Make Project"
+   - Click on "Build" in the toolbar and select "Make Project".
 
 5. **Run the Project:**
    - Connect an Android device or start an emulator.
